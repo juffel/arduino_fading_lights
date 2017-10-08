@@ -1,4 +1,6 @@
 #include <Adafruit_NeoPixel.h>
+#include "RTClib.h"
+#include <Wire.h>
 #ifdef __AVR__
   #include <avr/power.h>
 #endif
@@ -15,6 +17,7 @@ struct color {
 };
 
 void setup() {
+  setupClock();
   strip.begin();
   strip.show();
 }
@@ -24,6 +27,8 @@ struct color white = { 190, 150, 90 };
 struct color blue = { 0, 0, 190 };
 
 void loop() {
+  // tmp
+  DateTime now = rtc.now();
   colorFade(1000, blue, white);
   colorFade(1000, white, yellowish);
 }
@@ -55,4 +60,16 @@ void setPixel(uint8_t index, uint32_t color) {
 
 void setPixel(uint8_t index, uint32_t r, uint32_t g, uint32_t b) {
   strip.setPixelColor(index, strip.Color(r, g, b));
+}
+
+void setupClock() {
+  // see advenstkalender example in ../sketch_set_clock/
+  pinMode(A3, OUTPUT);
+  pinMode(A2, OUTPUT);
+  digitalWrite(A3, HIGH);
+  digitalWrite(A2, LOW);
+
+  // start rtc
+  Wire.begin();
+  rtc.begin();
 }
